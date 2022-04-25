@@ -83,11 +83,11 @@ class Viaje
     private function getStringPasajeros()
     {
         if (count($this->pasajeros) > 0) {
-            $stringPasajeros = "Pasajeros: \nNombre Apellido DNI\n";
+            $stringPasajeros = "Pasajeros: \nNombre Apellido DNI Telefono\n";
             foreach ($this->pasajeros as $pasajero) {
-                $stringPasajeros .= $pasajero->getNombre() . 
-                " " . $pasajero->getApellido() . " " . $pasajero->getDni() . 
-                " " . $pasajero->getTelefono() . "\n";
+                $stringPasajeros .= $pasajero->getNombre() .
+                    " " . $pasajero->getApellido() . " " . $pasajero->getDni() .
+                    " " . $pasajero->getTelefono() . "\n";
             }
         } else {
             $stringPasajeros = "No hay pasajeros en el viaje";
@@ -151,7 +151,7 @@ class Viaje
     public function __toString()
     {
         return "\n+=======================================+" .
-            "\nResponsable\n" . $this->getResposable() . 
+            "\nResponsable\n" . $this->getResposable() .
             "\nDestino: " . $this->getDestino() .
             "\nCodigo: " . $this->getCodigo() .
             "\nCantidad maxima de pasajeros: " . $this->getCantMaxPasajeros() .

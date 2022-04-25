@@ -4,21 +4,21 @@ class ResponsableV
     private $nombre;
     private $apellido;
     private $numeroEmpleado;
-    private $numeroLicencia;
+    private $licencia;
 
     /**
      * Constructor
      * @param string $nombre
      * @param string $apellido
      * @param int $numeroEmpleado
-     * @param int $numeroLicencia
+     * @param int $licencia
      */
-    public function __construct($nom, $ape, $numE, $numL)
+    public function __construct($nombreResponsable, $apellidoResponsable, $numEmpleado, $numLicencia)
     {
-        $this->nombre = $nom;
-        $this->apellido = $ape;
-        $this->numeroEmpleado = $numE;
-        $this->numeroLicencia = $numL;
+        $this->nombre = $nombreResponsable;
+        $this->apellido = $apellidoResponsable;
+        $this->numeroEmpleado = $numEmpleado;
+        $this->licencia = $numLicencia;
     }
 
     // Getters
@@ -37,9 +37,9 @@ class ResponsableV
         return $this->numeroEmpleado;
     }
 
-    public function getNumeroLicencia()
+    public function getlicencia()
     {
-        return $this->numeroLicencia;
+        return $this->licencia;
     }
 
     // Setters
@@ -48,30 +48,27 @@ class ResponsableV
         return $this->nombre = $nom;
     }
 
-    public function setApellido($ape)
-    {
+    public function setApellido($ape){
         return $this->apellido = $ape;
-
     }
 
-    public function setNumeroEmpleado($numE)
+    public function setNumeroEmpleado($numeroEmpleado)
     {
-        return $this->numeroEmpleado = $numE;
-
+        return $this->numeroEmpleado = $numeroEmpleado;
     }
 
-    public function setNumeroLicencia($numL)
+    public function setlicencia($numLicencia)
     {
-        return $this->numeroLicencia = $numL;
+        return $this->licencia = $numLicencia;
     }
 
     // Funciones magicas
     public function __toString()
     {
-        return "Nombre: " . $this->getNombre() . "\n" . 
-                "Apellido: " . $this->getApellido() . "\n" . 
-                "Numero Empleado: " . $this->getNumeroEmpleado() . "\n" . 
-                "Numero Licencia: " . $this->getNumeroLicencia();
+        return "Nombre: " . $this->getNombre() .
+            "\nApellido: " . $this->getApellido() .
+            "\nNumero Empleado: " . $this->getNumeroEmpleado() .
+            "\nNumero Licencia: " . $this->getlicencia();
     }
 
     public function __destruct()

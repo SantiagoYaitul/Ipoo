@@ -55,7 +55,10 @@ class Pasajero {
 
     // Funciones magicas
     public function __toString() {
-        return "Nombre: " . $this->getNombre() . "\nApellido: " . $this->getApellido() . "\nDNI: " . $this->getDni() . "\nTelefono: " . $this->getTelefono();
+        return "Nombre: " . $this->getNombre() . 
+                "\nApellido: " . $this->getApellido() . 
+                "\nDNI: " . $this->getDni() . 
+                "\nTelefono: " . $this->getTelefono();
     }
 
     public function __destruct() {
