@@ -185,6 +185,19 @@ class responsableV
         "', rapellido = '" . $this->getApellido() .
         "', rnumerolicencia = '" . $this->getLicencia() .
         "' WHERE rnumeroempleado = " . $this->getNumeroEmpleado();
+
+        if($bd->Iniciar())
+        {
+            if($bd->Ejecutar($consultaModifica)){
+                $resp = true;
+            } else {
+                $this->setMensajeOperacion($bd->getError());
+            }
+        } else {
+            $this->setMensajeOperacion($bd->getError());
+        }
+
+        return $resp;
     }
 
     public function Eliminar()
