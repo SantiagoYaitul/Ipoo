@@ -134,7 +134,7 @@ class responsableV
 
                     $responsable = new ResponsableV();
                     $responsable->Cargar($numEmpleado, $numLicencia, $nombre, $apellido);
-                    array_push($arrResponsables, $responsable);
+                    array_push($arreglo, $responsable);
                 }
             } else {
                 $this->setMensajeOperacion($bd->getError());
@@ -150,7 +150,7 @@ class responsableV
     {
         $bd = new BaseDatos();
         $resp = false;
-        if($this->getNumeroDocumento())
+        if($this->getNumeroEmpleado())
         {
             $consultaInsertar = "INSERT INTO responsable(rnumerolicencia, rnombre, rapellido)
                                 VALUES (" . $this->getLicencia() . "','" . $this->getNombre() . "','" . 

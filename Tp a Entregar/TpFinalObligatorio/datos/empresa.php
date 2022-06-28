@@ -131,7 +131,7 @@ class empresa
     {
         $bd = new BaseDatos();
         $resp = false;
-        if ($this->getIdEmpresa == null) {
+        if ($this->getIdEmpresa() == null) {
             $consultaInsertar = "INSERT INTO empresa(enombre, edireccion)
                             VALUES('" . $this->getNombre() . ", '" . $this->getDireccion() . "')";
         } else {
