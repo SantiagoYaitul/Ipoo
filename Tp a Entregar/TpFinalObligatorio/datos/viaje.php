@@ -200,7 +200,7 @@ class viaje{
         $consulta = "SELECT * FROM viaje WHERE idviaje = " . $id;
 
         if($bd->Iniciar())
-        {
+        { if($bd->Ejecutar($consulta)){
             if($row2 = $bd->Registro())
             {
                 $this->setIdViaje($id);
@@ -218,6 +218,7 @@ class viaje{
         } else {
             $this->setMensajeOperacion($bd->getError());
         }
+    } 
         return $resp;
     }
 
