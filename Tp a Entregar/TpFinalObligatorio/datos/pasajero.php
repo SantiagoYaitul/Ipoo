@@ -136,7 +136,7 @@ class pasajero{
         $arreglo = null;
         $bd = new BaseDatos();
 
-        $consulta = "SELECT FROM pasajero ";
+        $consulta = "SELECT * FROM pasajero ";
 
         if($condicion!=""){
             $consulta=$consulta . ' where ' .$condicion;
@@ -174,7 +174,7 @@ class pasajero{
         $resp = false;
         if($bd->Iniciar()){
         $consultaInsertar = "INSERT INTO pasajero(rdocumento, pnombre, papellido, ptelefono, idviaje) 
-                        VALUES (" . $this->getDocumento() . ",'" . 
+                        VALUES('" . $this->getDocumento() . "','" . 
             $this->getNombre() . "','" .
             $this->getApellido() . "','" .
             $this->getTelefono() . "','" .
@@ -195,26 +195,39 @@ class pasajero{
         return $resp;
     } 
 
-    public function Modificar()
+    public function Modificar($dniAntiguo = "", $condicion = "")
     {
         $resp = false;
         $bd = new BaseDatos();
-        $consultaModifica = "UPDATE pasajero 
-        SET pnombre = '" . $this->getNombre() .
-        "', papellido = '" . $this->getApellido() .
-        "', ptelefono = '" . $this->getTelefono() .
-        "' WHERE rdocumento = " . $this->getDocumento();
-        if($bd->Iniciar())
-        { if($bd->Ejecutar($consultaModifica))
-            {
-                $resp = true;
+        if ($dniAntiguo == null) {
+            $queryModifica = "UPDATE pasajero 
+            SET pnombre = '" . $this->getNombre() .
+                "', papellido = '" . $this->getApellido() .
+                "', ptelefono = '" . $this->getTelefono() .
+                "' WHERE rdocumento = " . $this->getDocumento();
+        } else {
+            $queryModifica = "UPDATE pasajero 
+            SET rdocumento = " .  $this->getDocumento() .
+                ", pnombre = '" . $this->getNombre() .
+                "', papellido = '" . $this->getApellido() .
+                "', ptelefono = '" . $this->getTelefono() .
+                "' WHERE rdocumento = " . $dniAntiguo;
+        }
+
+        if ($condicion != null) {
+            $queryModifica = $condicion;
+        }
+
+        if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($queryModifica)) {
+                $resp =  true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
         } else {
-                $this->setMensajeOperacion($bd->getError());
+            $this->setMensajeOperacion($bd->getError());
         }
-        return $resp; 
+        return $resp;
     }
 
     public function Eliminar()
@@ -223,7 +236,7 @@ class pasajero{
         $bd = new BaseDatos();
         if($bd->Iniciar())
         {
-            $consultaElimina = "DELETE FROM persona WHERE rdocumento = " . $this->getDocumento();
+            $consultaElimina = "DELETE FROM pasajero WHERE rdocumento = " . $this->getDocumento();
          if($bd->Ejecutar($consultaElimina))
             { 
                 $resp = true;

@@ -15,10 +15,10 @@ class BaseDatos {
      * vinculadas a la coneccion con el Servidor de BD
      */
     public function __construct(){
-        $this->HOSTNAME = "127.0.0.1";
+        $this->HOSTNAME = "localhost";
         $this->BASEDATOS = "bdViajes";
         $this->USUARIO = "root";
-        $this->CLAVE = "";
+        $this->CLAVE = "Maricon123";
         $this->QUERY = "";
         $this->ERROR = "";
     }
@@ -51,8 +51,6 @@ class BaseDatos {
             }  else{
                 $this->ERROR = mysqli_errno($conexion) . ": " . mysqli_error($conexion);
             }
-        }else{
-            $this->ERROR =  mysqli_errno($conexion) . ": " . mysqli_error($conexion);
         }
         return $resp;
     }
@@ -68,10 +66,10 @@ class BaseDatos {
         $resp  = false;
         unset($this->ERROR);
         $this->QUERY = $consulta;
-        if(  $this->RESULT = mysqli_query($this->CONEXION,$consulta)){
+        if($this->RESULT = mysqli_query($this->CONEXION,$consulta)){
             $resp = true;
         } else {
-            $this->ERROR =mysqli_errno( $this->CONEXION).": ". mysqli_error( $this->CONEXION);
+            $this->ERROR = mysqli_errno( $this->CONEXION). " : ". mysqli_error( $this->CONEXION);
         }
         return $resp;
     }
@@ -94,29 +92,8 @@ class BaseDatos {
         }else{
             $this->ERROR = mysqli_errno($this->CONEXION) . ": " . mysqli_error($this->CONEXION);
         }
-        return $resp ;
+        return $resp;
     }
-    
-    /**
-     * Devuelve el id de un campo autoincrement utilizado como clave de una tabla
-     * Retorna el id numerico del registro insertado, devuelve null en caso que la ejecucion de la consulta falle
-     *
-     * @param string $consulta
-     * @return int id de la tupla insertada
-     */
-    public function devuelveIDInsercion($consulta){
-        $resp = null;
-        unset($this->ERROR);
-        $this->QUERY = $consulta;
-        if ($this->RESULT = mysqli_query($this->CONEXION,$consulta)){
-            $id = mysqli_insert_id();
-            $resp =  $id;
-        } else {
-            $this->ERROR =mysqli_errno( $this->CONEXION) . ": " . mysqli_error( $this->CONEXION);
-           
-        }
-    return $resp;
-    }
-    
+
 }
 ?>

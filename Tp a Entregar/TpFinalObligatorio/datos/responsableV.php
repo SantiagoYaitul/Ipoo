@@ -153,11 +153,11 @@ class responsableV
         if($this->getNumeroEmpleado())
         {
             $consultaInsertar = "INSERT INTO responsable(rnumerolicencia, rnombre, rapellido)
-                                VALUES (" . $this->getLicencia() . "','" . $this->getNombre() . "','" . 
+                                VALUES ('" . $this->getLicencia() . "','" . $this->getNombre() . "','" . 
                                 $this->getApellido() . "')";
         } else {
             $consultaInsertar = "INSERT INTO responsable (rnumeroempleado, rnumerolicencia, rnombre, rapellido)
-                                VALUES (" . $this->getNumeroEmpleado() . "','" .
+                                VALUES ('" . $this->getNumeroEmpleado() . "','" .
                 $this->getLicencia() . "','" .
                 $this->getNombre() . "','" .
                 $this->getApellido() . "')";
@@ -176,25 +176,23 @@ class responsableV
         return $resp;
     }
 
-    public function Modificar()
+    public function Modificar($idAntiguo = "")
     {
         $resp = false;
         $bd = new BaseDatos();
-        $consultaModifica =  "UPDATE responsable 
-        SET rnombre = '" . $this->getNombre() .
-        "', rapellido = '" . $this->getApellido() .
-        "', rnumerolicencia = '" . $this->getLicencia() .
-        "' WHERE rnumeroempleado = " . $this->getNumeroEmpleado();
-
-        if($bd->Iniciar())
-        {
-            if($bd->Ejecutar($consultaModifica)){
-                $resp = true;
-            } else {
-                $this->setMensajeOperacion($bd->getError());
-            }
+        if ($idAntiguo == null) {
+            $queryModifica = "UPDATE responsable 
+            SET rnombre = '" . $this->getNombre() .
+                "', rapellido = '" . $this->getApellido() .
+                "', rnumerolicencia = '" . $this->getLicencia() .
+                "' WHERE rnumeroempleado = " . $this->getNumeroEmpleado();
         } else {
-            $this->setMensajeOperacion($bd->getError());
+            $queryModifica = "UPDATE responsable 
+            SET rnumeroempleado = " . $this->getNumeroEmpleado() .
+                ", rnombre = '" . $this->getNombre() .
+                "', rapellido = '" . $this->getApellido() .
+                "', rnumerolicencia = '" . $this->getLicencia() .
+                "' WHERE rnumeroempleado = " . $idAntiguo;
         }
 
         return $resp;
@@ -205,7 +203,7 @@ class responsableV
         $bd = new BaseDatos();
         $resp = false;
 
-        $consultaBorrar = "DELETE FROM persona WHERE rnumeroempleado " . $this->getNumeroEmpleado();
+        $consultaBorrar = "DELETE FROM responsable WHERE rnumeroempleado " . $this->getNumeroEmpleado();
         if($bd->Iniciar())
         {
             if($bd->Ejecutar($consultaBorrar))

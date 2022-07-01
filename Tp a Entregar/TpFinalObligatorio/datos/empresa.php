@@ -77,7 +77,7 @@ class empresa
     {
         $bd = new BaseDatos;
         $resp = false;
-        $consulta = "SELECT FROM empresa WHERE idempresa = " . $id;
+        $consulta = "SELECT * FROM empresa WHERE idempresa = " . $id;
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($consulta)) {
@@ -99,7 +99,7 @@ class empresa
     public function Listar($condicion = "")
     {
         $bd = new BaseDatos();
-        $consultaLista = "SELECT FROM empresa ";
+        $consultaLista = "SELECT * FROM empresa ";
         $arregloEmpresa = null;
         if ($condicion != "") {
             $consultaLista = $consultaLista . ' where ' . $condicion;
@@ -136,8 +136,7 @@ class empresa
                             VALUES('" . $this->getNombre() . ", '" . $this->getDireccion() . "')";
         } else {
             $consultaInsertar = "INSERT INTO empresa(idempresa, enombre, edireccion)
- 
-                                VALUES ('" . $this->getIdEmpresa() . ", '" . $this->getNombre() . ",'" . $this->getDireccion() . "')";
+                                VALUES('" . $this->getIdEmpresa() . "', '" . $this->getNombre() . "','" . $this->getDireccion() . "')";
         }
 
         if ($bd->Iniciar()) {
@@ -152,16 +151,25 @@ class empresa
         return $resp;
     }
 
-    public function Modificar()
+    public function Modificar($idAntiguo = "")
     {
         $resp = false;
         $bd = new BaseDatos();
-        $consultaModifica = "UPDATE empresa SET enombre = '" . $this->getNombre() . "', edireccion = '" . $this->getDireccion() .
-            "', WHERE idempresa = " . $this->getIdEmpresa();
-
+        if ($idAntiguo == null) {
+            $queryModifica = "UPDATE empresa 
+            SET enombre = '" . $this->getNombre() .
+                "', edireccion = '" . $this->getDireccion() .
+                "' WHERE idempresa = " . $this->getIdempresa();
+        } else {
+            $queryModifica = "UPDATE empresa 
+            SET idempresa = " . $this->getIdempresa() .
+                ", enombre = '" . $this->getNombre() .
+                "', edireccion = '" . $this->getDireccion() .
+                "' WHERE idempresa = " . $idAntiguo;
+        }
         if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($consultaModifica)) {
-                $resp = true;
+            if ($bd->Ejecutar($queryModifica)) {
+                $resp =  true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
