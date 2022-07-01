@@ -76,7 +76,7 @@ class empresa
     public function Buscar($id)
     {
         $bd = new BaseDatos;
-        $resp = false;
+        $result = false;
         $consulta = "SELECT * FROM empresa WHERE idempresa = " . $id;
 
         if ($bd->Iniciar()) {
@@ -85,7 +85,7 @@ class empresa
                     $this->setIdEmpresa($id);
                     $this->setNombre($row2['enombre']);
                     $this->setDireccion($row2['edireccion']);
-                    $resp = true;
+                    $result = true;
                 }
             } else {
                 $this->setMensajeOperacion($bd->getError());
@@ -93,7 +93,7 @@ class empresa
         } else {
             $this->setMensajeOperacion($bd->getError());
         }
-        return $resp;
+        return $result;
     }
 
     public function Listar($condicion = "")
@@ -130,7 +130,7 @@ class empresa
     public function Insertar()
     {
         $bd = new BaseDatos();
-        $resp = false;
+        $result = false;
         if ($this->getIdEmpresa() == null) {
             $consultaInsertar = "INSERT INTO empresa(enombre, edireccion)
                             VALUES('" . $this->getNombre() . ", '" . $this->getDireccion() . "')";
@@ -141,19 +141,19 @@ class empresa
 
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($consultaInsertar)) {
-                $resp = true;
+                $result = true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
         } else {
             $this->setMensajeOperacion($bd->getError());
         }
-        return $resp;
+        return $result;
     }
 
     public function Modificar($idAntiguo = "")
     {
-        $resp = false;
+        $result = false;
         $bd = new BaseDatos();
         if ($idAntiguo == null) {
             $queryModifica = "UPDATE empresa 
@@ -169,31 +169,31 @@ class empresa
         }
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($queryModifica)) {
-                $resp =  true;
+                $result =  true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
         } else {
             $this->setMensajeOperacion($bd->getError());
         }
-        return $resp;
+        return $result;
     }
 
     public function Eliminar()
     {
         $bd = new BaseDatos();
-        $resp = false;
+        $result = false;
 
         if ($bd->Iniciar()) {
             $consultaBorrar = "DELETE FROM empresa WHERE idempresa = " . $this->getIdEmpresa();
             if ($bd->Ejecutar($consultaBorrar)) {
-                $resp = true;
+                $result = true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
         } else {
             $this->setMensajeOperacion($bd->getError());
         }
-        return $resp;
+        return $result;
     }
 }

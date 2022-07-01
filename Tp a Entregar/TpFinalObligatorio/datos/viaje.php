@@ -196,7 +196,7 @@ class viaje{
     public function Buscar($id, $destino= "")
     {
         $bd = new BaseDatos();
-        $resp = false;
+        $result = false;
         $consulta = "SELECT * FROM viaje WHERE ";
         if ($destino == null) {
             $consulta = $consulta . 'idviaje = ' . $id;
@@ -216,16 +216,16 @@ class viaje{
                 $this->setImporte($row2['vimporte']);
                 $this->setTipoAsiento($row2['tipoAsiento']);
                 $this->setIdaYVuelta($row2['idayvuelta']);
-                $resp = true;
+                $result = true;
             } 
         } else if ($bd->Ejecutar($consulta)) 
             {
-            $resp = ($bd->Registro()!=null);
+            $result = ($bd->Registro()!=null);
             } else {
             $this->setMensajeOperacion($bd->getError());
             }
     } 
-        return $resp;
+        return $result;
     }
 
     public function Listar($condicion = "")
@@ -270,7 +270,7 @@ class viaje{
     public function Insertar()
     {
         $bd = new BaseDatos();
-        $resp = false;
+        $result = false;
 
         if($this->getIdViaje() == null)
         {
@@ -296,19 +296,19 @@ class viaje{
         {
             if($bd->Ejecutar($consultaInsertar))
             {
-                $resp = true;
+                $result = true;
             }else {
                 $this->setMensajeOperacion($bd->getError());
             }
         } else {
             $this->setMensajeOperacion($bd->getError());
         }
-        return $resp;
+        return $result;
     }
 
     public function Modificar($idAntiguo = "")
     {
-        $resp = false;
+        $result = false;
         $bd = new BaseDatos();
         if ($idAntiguo == null) {
             $queryModifica = "UPDATE viaje 
@@ -335,20 +335,20 @@ class viaje{
         }
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($queryModifica)) {
-                $resp =  true;
+                $result =  true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
         } else {
             $this->setMensajeOperacion($bd->getError());
         }
-        return $resp;
+        return $result;
     }
 
     public function Eliminar()
     {
         $bd = new BaseDatos();
-        $resp = false;
+        $result = false;
 
         if($bd->Iniciar())
         {
@@ -356,13 +356,13 @@ class viaje{
             $consultaBorrarViaje = "DELETE FROM viaje WHERE idviaje = " . $this->getIdViaje();
             if($bd->Ejecutar($consultaBorrarPasajeros) && $bd->Ejecutar($consultaBorrarViaje))
             {
-                $resp = true;
+                $result = true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
         }else{
             $this->setMensajeOperacion($bd->getError());
         }
-        return $resp;
+        return $result;
     }
 }

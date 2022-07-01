@@ -40,19 +40,19 @@ class BaseDatos {
      * @return boolean
      */
     public  function Iniciar(){
-        $resp  = false;
+        $result  = false;
         $conexion = mysqli_connect($this->HOSTNAME,$this->USUARIO,$this->CLAVE,$this->BASEDATOS);
         if ($conexion){
             if (mysqli_select_db($conexion,$this->BASEDATOS)){
                 $this->CONEXION = $conexion;
                 unset($this->QUERY);
                 unset($this->ERROR);
-                $resp = true;
+                $result = true;
             }  else{
                 $this->ERROR = mysqli_errno($conexion) . ": " . mysqli_error($conexion);
             }
         }
-        return $resp;
+        return $result;
     }
     
     /**
@@ -63,15 +63,15 @@ class BaseDatos {
      * @return boolean
      */
     public function Ejecutar($consulta){
-        $resp  = false;
+        $result  = false;
         unset($this->ERROR);
         $this->QUERY = $consulta;
         if($this->RESULT = mysqli_query($this->CONEXION,$consulta)){
-            $resp = true;
+            $result = true;
         } else {
             $this->ERROR = mysqli_errno( $this->CONEXION). " : ". mysqli_error( $this->CONEXION);
         }
-        return $resp;
+        return $result;
     }
     
     /**
@@ -81,18 +81,18 @@ class BaseDatos {
      * @return boolean
      */
     public function Registro() {
-        $resp = null;
+        $result = null;
         if ($this->RESULT){
             unset($this->ERROR);
             if($temp = mysqli_fetch_assoc($this->RESULT)){
-                $resp = $temp;
+                $result = $temp;
             }else{
                 mysqli_free_result($this->RESULT);
             }
         }else{
             $this->ERROR = mysqli_errno($this->CONEXION) . ": " . mysqli_error($this->CONEXION);
         }
-        return $resp;
+        return $result;
     }
 
 }
