@@ -18,7 +18,7 @@ class BaseDatos {
         $this->HOSTNAME = "localhost";
         $this->BASEDATOS = "bdViajes";
         $this->USUARIO = "root";
-        $this->CLAVE = "Maricon123";
+        $this->CLAVE = "";
         $this->QUERY = "";
         $this->ERROR = "";
     }
