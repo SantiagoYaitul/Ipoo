@@ -48,21 +48,25 @@ function ingresarEmpresa()
     $nombre = readline("Nombre de la empresa: ");
     $dir = readline("Direccion de la empresa: ");
 
-    if (!$empresa->Buscar($id)) 
-    {
-        $empresa->Cargar($id, $nombre, $dir);
-
-        $respuesta = $empresa->Insertar();
-        if ($respuesta == true) 
-        {
-            echo "\n\t   La empresa fue ingresada en la BD.\n" .
-                "\t========================================\n";
-        } else {
-            echo $empresa->getMensajeOperacion();
+    if ($id == null) {
+        $id = 1;
+        while ($empresa->Buscar($id)) {
+            $id++;
         }
-    } else {
-        echo "\nYa existe una empresa con ese ID.\n";
     }
+        if (!$empresa->Buscar($id)) {
+            $empresa->Cargar($id, $nombre, $dir);
+
+            $respuesta = $empresa->Insertar();
+            if ($respuesta == true) {
+                echo "\n\t   La empresa fue ingresada en la BD.\n" .
+                    "\t========================================\n";
+            } else {
+                echo $empresa->getMensajeOperacion();
+            }
+        } else {
+            echo "\nYa existe una empresa con ese ID.\n";
+        }
 }
 
 function modificarEmpresa()
@@ -71,27 +75,21 @@ function modificarEmpresa()
 
     $id = readline("Ingrese el id de la empresa a modificar: ");
     $respuesta = $empresa->Buscar($id);
-    if ($respuesta) 
-    {
+    if ($respuesta) {
         echo "Ingrese los nuevos datos.\n";
-        $nuevoid = readline("(Opcional) Id de la empresa: ");
         $nombre = readline("Nombre de la empresa: ");
-        $dir = readline("Direccion de la empresa: ");
-        if ($nuevoid != "") 
-        {
-            $empresa->Cargar($nuevoid, $nombre, $dir);
-        } else {
-            $empresa->setNombre($nombre);
-            $empresa->setDireccion($dir);
-        }
+        $direccion = readline("Direccion de la empresa: ");
 
+        $empresa->setNombre($nombre);
+        $empresa->setDireccion($direccion);
         $respuesta = $empresa->Modificar();
-        if ($respuesta) 
-        {
-            echo "\n\t   La empresa fue modificada correctamente.\n" .
+
+        if ($respuesta) {
+
+            echo "\n Los datos de la empresa fueron modificados correctamente. \n" .
                 "\t==============================================\n";
         } else {
-            echo "\nNo se pudo modificar la empresa.\n";
+            echo "\n No se pudo modificar la empresa";
         }
     } else {
         echo "No se pudo encontrar la empresa con id = " . $id . "\n";
@@ -100,25 +98,48 @@ function modificarEmpresa()
 
 function eliminarEmpresa()
 {
+
     $empresa = new empresa();
+    $viaje = new viaje();
 
     $id = readline("Ingrese el id de la empresa a eliminar: ");
     $respuesta = $empresa->Buscar($id);
 
-    if ($respuesta) 
-    {
+    if ($respuesta) {
         $respuesta = $empresa->Eliminar();
-        if ($respuesta) 
-        {
+        if ($respuesta) {
             echo "\n\t   La empresa fue eliminada de la BD.\n" .
                 "\t=========================================\n";
+            if ($viaje->Buscar(null, "idempresa = " . $id)) {
+                $eliminarEmpresa = readline("La empresa esta a cargo de un viaje. Quiere eliminar el viaje junto a la empresa? (s/n) ");
+                if ($eliminarEmpresa == "s") {
+                    $viaje->Eliminar();
+                    $empresaEncontrada = false;
+                } else {
+                    $empresaEncontrada = true;
+                }
+            } else {
+                $empresaEncontrada = false;
+            }
+
+            if (!$empresaEncontrada) {
+                $respuesta = $empresa->Eliminar();
+                if ($respuesta) {
+                    echo "\n\t   La empresa fue eliminada de la BD.\n" .
+                        "\t=========================================\n";
+                } else {
+                    echo "\nNo se pudo eliminar la empresa.\n";
+                }
+            } else {
+                echo "\nNo se pudo eliminar la empresa.\n";
+                echo "\nNo se puede eliminar un responsable a cargo de un viaje sin eliminar el viaje.\n";
+            }
         } else {
-            echo "\nNo se pudo eliminar la empresa.\n";
+            echo "No se pudo encontrar la empresa con id = " . $id . ".\n";
         }
-    } else {
-        echo "No se pudo encontrar la empresa con id = " . $id . ".\n";
     }
 }
+
 
 function mostrarEmpresa()
 {
@@ -126,13 +147,11 @@ function mostrarEmpresa()
 
     $resp = readline("Mostrar todas las empresas? (s/n) ");
 
-    if ($resp == 's') 
-    {
+    if ($resp == 's') {
         $colEmpresas = $empresa->Listar("");
 
         echo "-------------------------------------------------------\n";
-        foreach ($colEmpresas as $empresa) 
-        {
+        foreach ($colEmpresas as $empresa) {
 
             echo  $empresa;
             echo "-------------------------------------------------------\n";
@@ -141,8 +160,7 @@ function mostrarEmpresa()
         $id = readline("Ingrese el id de la empresa: ");
         if (is_int($id)) {
             $respuesta = $empresa->Buscar($id);
-            if ($respuesta) 
-            {
+            if ($respuesta) {
                 echo  $empresa;
             } else {
                 echo "No se pudo encontrar la empresa.";
@@ -156,72 +174,48 @@ function mostrarEmpresa()
 
 function ingresarViaje()
 {
-    
-        $viaje = new viaje();
-        $empresa = new empresa();
-        $responsable = new responsableV();
 
-        $id = readline("(Opcional) Id del viaje: ");
-        $destino = readline("Destino del viaje: ");
-        $cantmax = readline("Cantidad maxima de pasajeros: ");
-        $idempresa = readline("ID de la empresa a cargo: ");
-        $empleado = readline("Numero de empleado responsable: ");
-        $importe = readline("Importe: ");
-        $tipoAsiento = readline("Tipo de asiento (Primera clase o no, semicama o cama): ");
-        $idayvuelta = readline("Ida y vuelta? ");
+    $viaje = new viaje();
+    $empresa = new empresa();
+    $responsable = new responsableV();
 
-    if ($id != null) 
-    {
-        if (!$viaje->Buscar($id)) {
-            if (!$viaje->Buscar(null, $destino)) 
-            {
-                if ($empresa->Buscar($idempresa) && $responsable->Buscar($empleado)) {
-                    $viaje->Cargar($id, $destino, $cantmax, $idempresa, $empleado, $importe, $tipoAsiento, $idayvuelta);
+    $id = readline("(Opcional) Id del viaje: ");
+    $destino = readline("Destino del viaje: ");
+    $cantmax = readline("Cantidad maxima de pasajeros: ");
+    $idempresa = readline("ID de la empresa a cargo: ");
+    $nempleado = readline("Numero de empleado responsable: ");
+    $importe = readline("Importe: ");
+    $tipoAsiento = readline("Tipo de asiento (Primera clase o no, semicama o cama): ");
+    $idayvuelta = readline("Ida y vuelta? ");
 
-                    $respuesta = $viaje->Insertar();
-                    if ($respuesta == true) 
-                    {
-                        echo "\n\t   El viaje fue ingresado en la BD.\n" .
-                            "\t======================================\n";
-                    } else {
-                        echo $viaje->getMensajeOperacion();
-                    }
-                } else {
-                    echo "\nNo existe la empresa o responsable a cargo.\n";
-                }
-            } else {
-                echo "\nExiste un viaje al destino.\n";
-            }
-        } else {
-            echo "\nYa existe un viaje con ese ID.\n";
+    if ($id == null) {
+        $id = 1;
+        while ($viaje->Buscar($id, null)) {
+            $id++;
         }
-    } else {
-        if ($empresa->Buscar($idempresa) && $responsable->Buscar($empleado)) 
-        {
-            if (!$viaje->Buscar(null, $destino))
-            {
-                $viaje->setDestino($destino);
-                $viaje->setCantMaxPasajeros($cantmax);
-                $viaje->setIdEmpresa($idempresa);
-                $viaje->setNumeroEmpleado($empleado);
-                $viaje->setImporte($importe);
-                $viaje->setTipoAsiento($tipoAsiento);
-                $viaje->setIdaYVuelta($idayvuelta);
+    }
+
+    if (!$viaje->Buscar($id, "")) {
+        if (!$viaje->Buscar(null,  "vdestino = '" . $destino . "'")) {
+            if ($empresa->Buscar($idempresa) && $responsable->Buscar($nempleado)) {
+                $viaje->Cargar($id, $destino, $cantmax, $empresa, $responsable, $importe, $tipoAsiento, $idayvuelta);
 
                 $respuesta = $viaje->Insertar();
-                if ($respuesta == true) 
-                {
-                    echo "\n El viaje fue ingresado en la BD.\n" .
+                if ($respuesta == true) {
+                    echo "\n\t   El viaje fue ingresado en la BD.\n" .
                         "\t======================================\n";
                 } else {
                     echo $viaje->getMensajeOperacion();
                 }
             } else {
-                echo "\nExiste un viaje al destino.\n";
+
+                echo "\nNo existe la empresa o responsable a cargo.\n";
             }
         } else {
-            echo "\nNo existe la empresa o responsable a cargo.\n";
+            echo "\nExiste un viaje al destino.\n";
         }
+    } else {
+        echo "\nYa existe un viaje con ese ID.\n";
     }
 }
 
@@ -229,63 +223,47 @@ function ingresarViaje()
 function modificarViaje()
 {
     $viaje = new viaje();
+    $empresa = new empresa();
+    $responsable = new responsableV();
 
     $id = readline("Ingrese el id del viaje a modificar: ");
 
-    $respuesta = $viaje->Buscar($id);
-    if ($respuesta) 
-    {
-            echo "Ingrese los nuevos datos.\n";
-            $nuevoid = readline("(Opcional) Id del viaje: ");
-            $destino = readline("Destino del viaje: ");
-            $cantmax = readline("Cantidad maxima de pasajeros: ");
-            $idempresa = readline("ID de la empresa a cargo: ");
-            $nempleado = readline("Numero de empleado responsable: ");
-            $importe = readline("Importe: ");
-            $tipoAsiento = readline("Tipo de asiento (Primera clase o no, semicama o cama): ");
-            $idayvuelta = readline("Ida y vuelta? ");
-        if (!$viaje->Buscar(null, $destino)) 
-        {
-            if ($nuevoid != "") 
-            {
-                $viaje->Cargar($nuevoid, $destino, $cantmax, $idempresa, $nempleado, $importe, $tipoAsiento, $idayvuelta);
+    $respuesta = $viaje->Buscar($id, null);
+    if ($respuesta) {
+        echo "Ingrese los nuevos datos.\n";
+        $destino = readline("Destino del viaje: ");
+        $cantmax = readline("Cantidad maxima de pasajeros: ");
+        $idempresa = readline("ID de la empresa a cargo: ");
+        $nempleado = readline("Numero de empleado responsable: ");
+        $importe = readline("Importe: ");
+        $tipoAsiento = readline("Tipo de asiento (Primera clase o no, semicama o cama): ");
+        $idayvuelta = readline("Ida y vuelta? ");
+        if (!$viaje->Buscar(null, "vdestino = '" . $destino . "'")) {
+            if ($empresa->Buscar($idempresa) && $responsable->Buscar($nempleado)) {
+                $viaje->setDestino($destino);
+                $viaje->setCantMaxPasajeros($cantmax);
+                $viaje->setEmpresa($empresa);
+                $viaje->setResponsable($responsable);
+                $viaje->setImporte($importe);
+                $viaje->setTipoAsiento($tipoAsiento);
+                $viaje->setIdaYVuelta($idayvuelta);
 
-                $respuesta = $viaje->Insertar();
-                $pasajeros = new pasajero();
-
-                $pasajeros->Modificar("", "UPDATE pasajero SET idviaje = " . $nuevoid . " WHERE idviaje = " . $id);
-                $respuesta = $viaje->Buscar($id);
-                $respuesta = $viaje->Eliminar();
-                    if ($respuesta) 
-                    {
+                $respuesta = $viaje->Modificar();
+                if ($respuesta) {
                     echo "\n\t   El viaje fue modificado correctamente.\n" .
                         "\t============================================\n";
-                    } else {
-                    $viaje->setDestino($destino);
-                    $viaje->setCantMaxPasajeros($cantmax);
-                    $viaje->setIdEmpresa($idempresa);
-                    $viaje->setNumeroEmpleado($nempleado);
-                    $viaje->setImporte($importe);
-                    $viaje->setTipoAsiento($tipoAsiento);
-                    $viaje->setIdaYVuelta($idayvuelta);
+                } else {
+                    echo "\n No se pudo modificar el viaje. \n";
                 }
+            } else {
+                echo "\n No existe la empresa o responsable.\n";
             }
         } else {
             echo "\nExiste un viaje al destino.\n";
         }
-        
-        $respuesta = $viaje->Modificar();
-        if ($respuesta) 
-        {
-            echo "\n\t   El viaje fue modificado correctamente.\n" .
-                "\t============================================\n";
-        } else {
-            echo "\nNo se pudo eliminar la empresa.\n";
-        } 
-    }else {
+    } else {
         echo "No se pudo encontrar el viaje con id = " . $id . ".\n";
     }
-
 }
 
 function eliminarViaje()
@@ -293,13 +271,11 @@ function eliminarViaje()
     $viaje = new viaje();
 
     $id = readline("Ingrese el id del viaje a eliminar: ");
-    $respuesta = $viaje->Buscar($id);
+    $respuesta = $viaje->Buscar($id, null);
 
-    if ($respuesta) 
-    {
+    if ($respuesta) {
         $respuesta = $viaje->Eliminar();
-        if ($respuesta) 
-        {
+        if ($respuesta) {
             echo "\n\t   El viaje fue eliminado de la BD.\n" .
                 "\t=========================================\n";
         } else {
@@ -316,22 +292,18 @@ function mostrarViaje()
 
     $resp = readline("Mostrar todos los viajes? (s/n) ");
 
-    if ($resp == 's') 
-    {
+    if ($resp == 's') {
         $colViajes = $viaje->Listar("");
-        foreach ($colViajes as $viaje) 
-        {
+        foreach ($colViajes as $viaje) {
 
             echo $viaje;
             echo "\n-------------------------------------------------------\n";
         }
     } else {
         $id = readline("Ingrese el id del viaje: ");
-        if (is_int($id)) 
-        {
-            $respuesta = $viaje->Buscar($id);
-            if ($respuesta) 
-            {
+        if (is_int($id)) {
+            $respuesta = $viaje->Buscar($id, null);
+            if ($respuesta) {
                 echo $viaje;
             } else {
                 echo "No se pudo encontrar el viaje.";
@@ -352,22 +324,28 @@ function ingresarResponsable()
     $nombre = readline("Nombre del responsable: ");
     $apellido = readline("Apellido del responsable: ");
 
-    if (!$responsable->Buscar($id)) 
-    {
+    if ($id == null) {
+        $id = 1;
+        while ($responsable->Buscar($id)) {
+            $id++;
+        }
+    }
+
+    if (!$responsable->Buscar($id)) {
         $responsable->Cargar($id, $numLic, $nombre, $apellido);
 
         $respuesta = $responsable->Insertar();
-        if ($respuesta == true) 
-        {
-            echo "\n\t   La responsable fue ingresada en la BD.\n" .
+        if ($respuesta) {
+            echo "\n\t   El responsable fue ingresada en la BD.\n" .
                 "\t========================================\n";
         } else {
             echo $responsable->getMensajeOperacion();
         }
     } else {
-        echo "\nYa existe una empresa con ese ID.\n";
+        echo "\nYa existe un responsable con ese ID.\n";
     }
 }
+
 
 function modificarResponsable()
 {
@@ -375,25 +353,19 @@ function modificarResponsable()
 
     $numE = readline("Ingrese el numero de empleado del responsable a modificar: ");
     $respuesta = $responsable->Buscar($numE);
-    if ($respuesta) 
-    {
+    if ($respuesta) {
         echo "Ingrese los nuevos datos.\n";
-        $nuevoNumE = readline("(Opcional) Numero de empleado: ");
         $numLic = readline("Numero de licencia: ");
         $nombre = readline("Nombre del responsable: ");
         $apellido = readline("Apellido del responsable: ");
-        if ($nuevoNumE != null) 
-        {
-            $responsable->Cargar($nuevoNumE, $numLic, $nombre, $apellido);
-        } else {
-            $responsable->setLicencia($numLic);
-            $responsable->setNombre($nombre);
-            $responsable->setApellido($apellido);
-        }
+
+        $responsable->setLicencia($numLic);
+        $responsable->setNombre($nombre);
+        $responsable->setApellido($apellido);
+
 
         $respuesta = $responsable->Modificar($numE);
-        if ($respuesta) 
-        {
+        if ($respuesta) {
             echo "\n\t   El responsable fue modificada correctamente.\n" .
                 "\t==============================================\n";
         } else {
@@ -407,19 +379,36 @@ function modificarResponsable()
 function eliminarResponsable()
 {
     $responsable = new responsableV();
+    $viaje = new viaje();
+    $eliminarViaje = "n";
 
     $numE = readline("Ingrese el numero de empleado del responsable a eliminar: ");
     $respuesta = $responsable->Buscar($numE);
 
-    if ($respuesta) 
-    {
-        $respuesta = $responsable->Eliminar();
-        if ($respuesta) 
-        {
-            echo "\n\t   El responsable fue eliminado de la BD.\n" .
-                "\t=========================================\n";
+    if ($respuesta) {
+        if ($viaje->Buscar(null, "rnumeroempleado = " . $numE)) {
+            $eliminarViaje = readline("El responsable esta a cargo de un viaje. Quiere eliminar el viaje junto al responsable? (s/n) ");
+            if ($eliminarViaje == "s") {
+                $viaje->Eliminar();
+                $viajeEncontrado = false;
+            } else {
+                $viajeEncontrado = true;
+            }
+        } else {
+            $viajeEncontrado = false;
+        }
+
+        if (!$viajeEncontrado) {
+            $respuesta = $responsable->Eliminar();
+            if ($respuesta) {
+                echo "\n\t   El responsable fue eliminado de la BD.\n" .
+                    "\t=========================================\n";
+            } else {
+                echo "\nNo se pudo eliminar el responsable.\n";
+            }
         } else {
             echo "\nNo se pudo eliminar el responsable.\n";
+            echo "\nNo se puede eliminar un responsable a cargo de un viaje sin eliminar el viaje.\n";
         }
     } else {
         echo "No se pudo encontrar el responsable con numero de empleado: " . $numE . ".\n";
@@ -432,8 +421,7 @@ function mostrarResponsable()
 
     $resp = readline("Mostrar todos los responsables? (s/n) ");
 
-    if ($resp == 's') 
-    {
+    if ($resp == 's') {
         $colResponsables = $responsable->Listar("");
 
         echo "-------------------------------------------------------";
@@ -444,11 +432,9 @@ function mostrarResponsable()
         }
     } else {
         $numE = readline("Ingrese el numero de empleado: ");
-        if (is_numeric($numE)) 
-        {
+        if (is_numeric($numE)) {
             $respuesta = $responsable->Buscar($numE);
-            if ($respuesta) 
-            {
+            if ($respuesta) {
                 echo $responsable;
             } else {
                 echo "No se pudo encontrar el responsable.";
@@ -471,14 +457,12 @@ function ingresarPasajero()
     $telefono = readline("Telefono: ");
     $idviaje = readline("Id del viaje: ");
 
-    if ($viaje->Buscar($idviaje)) 
-    {
+    if ($viaje->Buscar($idviaje, null)) {
         if (!$pasajero->Buscar($dni)) {
-            $pasajero->Cargar($nombre, $apellido, $dni, $telefono, $idviaje);
+            $pasajero->Cargar($nombre, $apellido, $dni, $telefono, $viaje);
 
             $respuesta = $pasajero->Insertar();
-            if ($respuesta == true) 
-            {
+            if ($respuesta == true) {
                 echo "\n\t   La pasajero fue ingresado en la BD.\n" .
                     "\t========================================\n";
             } else {
@@ -498,11 +482,9 @@ function modificarPasajero()
     $viaje = new viaje();
 
     $dni = readline("Ingrese el documento del pasajero a modificar: ");
-    if (is_numeric($dni)) 
-    {
+    if (is_numeric($dni)) {
         $respuesta = $pasajero->Buscar($dni);
-        if ($respuesta) 
-        {
+        if ($respuesta) {
             echo "Ingrese los nuevos datos.\n";
             $nuevodni = readline("Documento de pasajero: ");
             $nombre = readline("Nombre: ");
@@ -510,13 +492,10 @@ function modificarPasajero()
             $telefono = readline("Telefono: ");
             $idviaje = readline("Id del viaje: ");
 
-            if ($viaje->Buscar($idviaje)) 
-            {
-                if ($nuevodni != null) 
-                {
-                    if (!$pasajero->Buscar($nuevodni)) 
-                    {
-                        $pasajero->Cargar($nombre, $apellido, $nuevodni, $telefono, $idviaje);
+            if ($viaje->Buscar($idviaje, null)) {
+                if ($nuevodni != null) {
+                    if (!$pasajero->Buscar($nuevodni)) {
+                        $pasajero->Cargar($nombre, $apellido, $nuevodni, $telefono, $viaje);
                     } else {
                         echo "Ya existe un pasajero con ese documento.\n";
                     }
@@ -524,12 +503,11 @@ function modificarPasajero()
                     $pasajero->setNombre($nombre);
                     $pasajero->setApellido($apellido);
                     $pasajero->setTelefono($telefono);
-                    $pasajero->setIdViaje($idviaje);
+                    $pasajero->setViaje($viaje);
                 }
 
                 $respuesta = $pasajero->Modificar($dni);
-                if ($respuesta) 
-                {
+                if ($respuesta) {
                     echo "\n\t   El pasajero fue modificado correctamente.\n" .
                         "\t==============================================\n";
                 } else {
@@ -553,15 +531,12 @@ function eliminarPasajero()
 
     $dni = readline("Ingrese el documento del pasajero a eliminar: ");
 
-    if (is_numeric($dni)) 
-    {
+    if (is_numeric($dni)) {
         $respuesta = $pasajero->Buscar($dni);
 
-        if ($respuesta) 
-        {
+        if ($respuesta) {
             $respuesta = $pasajero->Eliminar();
-            if ($respuesta) 
-            {
+            if ($respuesta) {
                 echo "\n\t   El pasajero fue eliminado de la BD.\n" .
                     "\t=========================================\n";
             } else {
@@ -581,24 +556,20 @@ function mostrarPasajero()
 
     $resp = readline("Mostrar todos los pasajeros? (s/n) ");
 
-    if ($resp == 's') 
-    {
+    if ($resp == 's') {
         $colPasajeros = $pasajero->Listar("");
 
         echo "-------------------------------------------------------";
-        foreach ($colPasajeros as $pasajero) 
-        {
+        foreach ($colPasajeros as $pasajero) {
 
             echo $pasajero;
             echo "-------------------------------------------------------";
         }
     } else {
         $numE = readline("Ingrese documento del pasajero: ");
-        if (is_numeric($numE)) 
-        {
+        if (is_numeric($numE)) {
             $respuesta = $pasajero->Buscar($numE);
-            if ($respuesta) 
-            {
+            if ($respuesta) {
                 echo $pasajero;
             } else {
                 echo "No se pudo encontrar el pasajero.";
@@ -670,13 +641,11 @@ function opciones()
             break;
         default:
             echo "Opcion incorrecta. Tiene que ser un numero entre 1 y 16.";
-            time_nanosleep(2, 0);
             $resp = true;
     }
 
     echo "\n";
-    if ($opcion != 0 && ($opcion > 0 && $opcion <= 16)) 
-    {
+    if ($opcion != 0 && ($opcion > 0 && $opcion <= 16)) {
         $resp = 's' == readline("Realizar otra operacion? (s/n) ");
     }
 

@@ -80,8 +80,10 @@ class empresa
         $consulta = "SELECT * FROM empresa WHERE idempresa = " . $id;
 
         if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($consulta)) {
-                if ($row2 = $bd->Registro()) {
+            if ($bd->Ejecutar($consulta)) 
+            {
+                if ($row2 = $bd->Registro()) 
+                {
                     $this->setIdEmpresa($id);
                     $this->setNombre($row2['enombre']);
                     $this->setDireccion($row2['edireccion']);
@@ -101,13 +103,16 @@ class empresa
         $bd = new BaseDatos();
         $consultaLista = "SELECT * FROM empresa ";
         $arregloEmpresa = null;
-        if ($condicion != "") {
+        if ($condicion != "") 
+        {
             $consultaLista = $consultaLista . ' where ' . $condicion;
         }
 
         $consultaLista .= " order by idempresa";
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($consultaLista)) {
+        if ($bd->Iniciar()) 
+        {
+            if ($bd->Ejecutar($consultaLista)) 
+            {
                 $arregloEmpresa = array();
                 while ($row2 = $bd->Registro()) {
                     $idempresa = $row2['idempresa'];
@@ -131,16 +136,19 @@ class empresa
     {
         $bd = new BaseDatos();
         $result = false;
-        if ($this->getIdEmpresa() == null) {
+        if ($this->getIdEmpresa() == null) 
+        {
             $consultaInsertar = "INSERT INTO empresa(enombre, edireccion)
-                            VALUES('" . $this->getNombre() . ", '" . $this->getDireccion() . "')";
+                            VALUES(" . $this->getNombre() . ",'" . $this->getDireccion() . "')";
         } else {
             $consultaInsertar = "INSERT INTO empresa(idempresa, enombre, edireccion)
-                                VALUES('" . $this->getIdEmpresa() . "', '" . $this->getNombre() . "','" . $this->getDireccion() . "')";
+                                VALUES(" . $this->getIdEmpresa() . ",'" . $this->getNombre() . "','" . $this->getDireccion() . "')";
         }
 
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($consultaInsertar)) {
+        if ($bd->Iniciar()) 
+        {
+            if ($bd->Ejecutar($consultaInsertar)) 
+            {
                 $result = true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
@@ -155,20 +163,14 @@ class empresa
     {
         $result = false;
         $bd = new BaseDatos();
-        if ($idAntiguo == null) {
-            $queryModifica = "UPDATE empresa 
+        $queryModifica = "UPDATE empresa 
             SET enombre = '" . $this->getNombre() .
                 "', edireccion = '" . $this->getDireccion() .
-                "' WHERE idempresa = " . $this->getIdempresa();
-        } else {
-            $queryModifica = "UPDATE empresa 
-            SET idempresa = " . $this->getIdempresa() .
-                ", enombre = '" . $this->getNombre() .
-                "', edireccion = '" . $this->getDireccion() .
-                "' WHERE idempresa = " . $idAntiguo;
-        }
-        if ($bd->Iniciar()) {
-            if ($bd->Ejecutar($queryModifica)) {
+                "' WHERE idempresa = " . $this->getIdEmpresa();
+        if ($bd->Iniciar()) 
+        {
+            if ($bd->Ejecutar($queryModifica)) 
+            {
                 $result =  true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
@@ -184,9 +186,11 @@ class empresa
         $bd = new BaseDatos();
         $result = false;
 
-        if ($bd->Iniciar()) {
+        if ($bd->Iniciar()) 
+        {
             $consultaBorrar = "DELETE FROM empresa WHERE idempresa = " . $this->getIdEmpresa();
-            if ($bd->Ejecutar($consultaBorrar)) {
+            if ($bd->Ejecutar($consultaBorrar)) 
+            {
                 $result = true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
