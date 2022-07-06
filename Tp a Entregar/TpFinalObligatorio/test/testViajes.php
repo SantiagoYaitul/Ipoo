@@ -44,7 +44,7 @@ function ingresarEmpresa()
 {
     $empresa = new empresa();
 
-    $id = readline("(Opcional) Id de la empresa: ");
+    $id = readline(" Id de la empresa: ");
     $nombre = readline("Nombre de la empresa: ");
     $dir = readline("Direccion de la empresa: ");
 
@@ -112,7 +112,7 @@ function eliminarEmpresa()
                 "\t=========================================\n";
             if ($viaje->Buscar(null, "idempresa = " . $id)) {
                 $eliminarEmpresa = readline("La empresa esta a cargo de un viaje. Quiere eliminar el viaje junto a la empresa? (s/n) ");
-                if ($eliminarEmpresa == "s") {
+                if ($eliminarEmpresa == "s" && $viaje->getPasajeros() == []) {
                     $viaje->Eliminar();
                     $empresaEncontrada = false;
                 } else {
@@ -179,7 +179,7 @@ function ingresarViaje()
     $empresa = new empresa();
     $responsable = new responsableV();
 
-    $id = readline("(Opcional) Id del viaje: ");
+    $id = readline(" Id del viaje: ");
     $destino = readline("Destino del viaje: ");
     $cantmax = readline("Cantidad maxima de pasajeros: ");
     $idempresa = readline("ID de la empresa a cargo: ");
@@ -248,7 +248,7 @@ function modificarViaje()
                 $viaje->setTipoAsiento($tipoAsiento);
                 $viaje->setIdaYVuelta($idayvuelta);
 
-                $respuesta = $viaje->Modificar();
+                $respuesta = $viaje->Modificar($id);
                 if ($respuesta) {
                     echo "\n\t   El viaje fue modificado correctamente.\n" .
                         "\t============================================\n";
@@ -271,21 +271,27 @@ function eliminarViaje()
     $viaje = new viaje();
 
     $id = readline("Ingrese el id del viaje a eliminar: ");
-    $respuesta = $viaje->Buscar($id, null);
+    $resp = $viaje->Buscar($id, null);
+    if($viaje->getPasajeros() == [])
+    {
 
-    if ($respuesta) {
-        $respuesta = $viaje->Eliminar();
-        if ($respuesta) {
-            echo "\n\t   El viaje fue eliminado de la BD.\n" .
+        if ($resp) 
+        {
+        $resp = $viaje->Eliminar();
+            if ($resp) 
+            {
+            echo "\n\t   El viaje fue eliminado de la BD.\n".
                 "\t=========================================\n";
-        } else {
+            } else {
             echo "\nNo se pudo eliminar el viaje.\n";
+            }
+        } else {
+        echo "No se pudo encontrar el viaje con id = " . $id . ".\n";
         }
     } else {
-        echo "No se pudo encontrar el viaje con id = " . $id . ".\n";
+        echo "El viaje seleccionado contiene pasajeros en la base de datos, antes de eliminar el viaje debe eliminar a los pasajeros";
     }
 }
-
 function mostrarViaje()
 {
     $viaje = new viaje();
@@ -319,7 +325,7 @@ function ingresarResponsable()
 {
     $responsable = new responsableV();
 
-    $id = readline("(Opcional) Numero de empleado: ");
+    $id = readline(" Numero de empleado: ");
     $numLic = readline("Numero de licencia: ");
     $nombre = readline("Nombre del responsable: ");
     $apellido = readline("Apellido del responsable: ");
@@ -388,9 +394,10 @@ function eliminarResponsable()
     if ($respuesta) {
         if ($viaje->Buscar(null, "rnumeroempleado = " . $numE)) {
             $eliminarViaje = readline("El responsable esta a cargo de un viaje. Quiere eliminar el viaje junto al responsable? (s/n) ");
-            if ($eliminarViaje == "s") {
+            if ($eliminarViaje == "s" && $viaje->getPasajeros() == []) {
                 $viaje->Eliminar();
                 $viajeEncontrado = false;
+                
             } else {
                 $viajeEncontrado = true;
             }
@@ -408,7 +415,7 @@ function eliminarResponsable()
             }
         } else {
             echo "\nNo se pudo eliminar el responsable.\n";
-            echo "\nNo se puede eliminar un responsable a cargo de un viaje sin eliminar el viaje.\n";
+            echo "\nNo se puede eliminar un responsable a cargo sin eliminar el viaje.\n";
         }
     } else {
         echo "No se pudo encontrar el responsable con numero de empleado: " . $numE . ".\n";

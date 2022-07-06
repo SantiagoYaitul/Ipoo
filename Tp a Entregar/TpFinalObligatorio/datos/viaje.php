@@ -1,15 +1,16 @@
 <?php
 
-class viaje{
-   
+class viaje
+{
+
     private $idviaje;
     private $vdestino;
     private $vcantmaxpasajeros;
     private $vimporte;
     private $tipoAsiento;
     private $idayvuelta;
-    private $pasajeros; //array[objeto]
-    private $responsable; //objeto
+    private $pasajeros; 
+    private $responsable; 
     private $empresa;
 
     public function __construct()
@@ -18,7 +19,7 @@ class viaje{
         $this->vdestino;
         $this->vcantmaxpasajeros;
         $this->vimporte;
-        $this->tipoAsiento; //primara clase, cama o semicama
+        $this->tipoAsiento; //primera clase, cama o semicama
         $this->idayvuelta; //si no
         $this->pasajeros;
         $this->responsable;
@@ -134,26 +135,25 @@ class viaje{
     public function __toString()
     {
         return "Id Viaje: " . $this->getIdViaje() . "\n" .
-        "Destino: " . $this->getDestino() . "\n" .
-        "Cantidad Maxima de Pasajeros: " . $this->getCantMaxPasajeros() . "\n" .
-        "Empresa: " . $this->getEmpresa() . "\n" .
-        "Importe: " . $this->getImporte() . "\n" .
-        "Tipo Asiento: " . $this->getTipoAsiento() . "\n" .
-        "Responsable: " . $this->getResponsable() . "\n" .
-        "Pasajeros: " . $this->pasajerosAString() . "\n";
+            "Destino: " . $this->getDestino() . "\n" .
+            "Cantidad Maxima de Pasajeros: " . $this->getCantMaxPasajeros() . "\n" .
+            "Empresa: " . $this->getEmpresa() . "\n" .
+            "Importe: " . $this->getImporte() . "\n" .
+            "Tipo Asiento: " . $this->getTipoAsiento() . "\n" .
+            "Responsable: " . $this->getResponsable() . "\n" .
+            "Pasajeros: " . $this->pasajerosAString() . "\n";
     }
 
     public function pasajerosAString()
     {
         $objPasajeros = new pasajero();
 
-        $condicion = "idviaje = " . $this->getIdViaje();
+        $condicion = " where idviaje = " . $this->getIdViaje();
         $coleccionPasajeros = $objPasajeros->Listar($condicion);
         $retorno = "";
 
-        foreach ($coleccionPasajeros as $pasajero)
-        {
-            $retorno .= $pasajero->__toString() . "\n-------------"; 
+        foreach ($coleccionPasajeros as $pasajero) {
+            $retorno .= $pasajero->__toString() . "\n-------------";
         }
         return $retorno;
     }
@@ -185,32 +185,31 @@ class viaje{
         } else {
             $consulta = $consulta . $condicion;
         }
-        
-        if($bd->Iniciar())
-        { 
-            if($bd->Ejecutar($consulta))
+
+        if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($consulta)) 
             {
-                if($row2 = $bd->Registro())
+                if ($row2 = $bd->Registro()) 
                 {
-                $this->setIdViaje($row2['idviaje']);
-                $this->setDestino($row2['vdestino']);
-                $this->setCantMaxPasajeros($row2['vcantmaxpasajeros']);
-                $empresa->Buscar(($row2['idempresa']));
-                $this->setEmpresa($empresa);
-                $responsable->Buscar(($row2['rnumeroempleado']));
-                $this->setResponsable($responsable);
-                $this->setImporte($row2['vimporte']);
-                $this->setTipoAsiento($row2['tipoAsiento']);
-                $this->setIdaYVuelta($row2['idayvuelta']);
-                $this->setPasajeros($pasajero->Listar(" idviaje = " . $this->getIdViaje()));
-                $resp = true;
-                } 
+                    $this->setIdViaje($row2['idviaje']);
+                    $this->setDestino($row2['vdestino']);
+                    $this->setCantMaxPasajeros($row2['vcantmaxpasajeros']);
+                    $empresa->Buscar(($row2['idempresa']));
+                    $this->setEmpresa($empresa);
+                    $responsable->Buscar(($row2['rnumeroempleado']));
+                    $this->setResponsable($responsable);
+                    $this->setImporte($row2['vimporte']);
+                    $this->setTipoAsiento($row2['tipoAsiento']);
+                    $this->setIdaYVuelta($row2['idayvuelta']);
+                    $this->setPasajeros($pasajero->Listar("where idviaje = " . $this->getIdViaje()));
+                    $resp = true;
+                }
             } else {
-            $this->setMensajeOperacion($bd->getError());
+                $this->setMensajeOperacion($bd->getError());
             }
         } else {
             $this->setMensajeOperacion($bd->getError());
-            }
+        }
 
         return $resp;
     }
@@ -220,22 +219,21 @@ class viaje{
         $arregloViaje = null;
         $bd = new BaseDatos();
         $empresa = new empresa();
-        $responsable = new responsableV();
+        $responsable = new responsableV();  
         $consultaListar = "SELECT * FROM viaje ";
 
-        if($condicion != "")
+        if ($condicion != "") 
         {
             $consultaListar = $consultaListar . ' where ' . $condicion;
         }
-            $consultaListar .= " order by idviaje ";
-            
-        if($bd->Iniciar())
-        {
-            if($bd->Ejecutar($consultaListar))
+        $consultaListar .= " order by idviaje ";
+
+        if ($bd->Iniciar()) {
+            if ($bd->Ejecutar($consultaListar)) 
             {
                 $arregloViaje = [];
 
-                while($row2 = $bd->Registro())
+                while ($row2 = $bd->Registro()) 
                 {
                     $idviaje = $row2['idviaje'];
                     $vdestino = $row2['vdestino'];
@@ -266,32 +264,22 @@ class viaje{
         $responsable = $this->getResponsable();
         $resp = false;
 
-        if($this->getIdViaje() == null)
-        {
-            $consultaInsertar = "INSERT INTO viaje(vdestino, vcantmaxpasajeros, idempresa, rnumeroempleado, vimporte, tipoAsiento, idayvuelta) 
-                    VALUES ('" . $this->getDestino() . "','" .
-                $this->getCantMaxPasajeros() .  "','" .
-                $empresa->getIdempresa() .  "','" .
-                $responsable->getNumeroEmpleado() .  "','" .
-                $this->getImporte() .  "','" .
-                $this->getTipoAsiento() .  "','" .
-                $this->getIdaYVuelta() .  "')";
-            } else {
-                $consultaInsertar = "INSERT INTO viaje(idviaje, vdestino, vcantmaxpasajeros, idempresa, rnumeroempleado, vimporte, tipoAsiento, idayvuelta)
+        $consultaInsertar = "INSERT INTO viaje(idviaje, vdestino, vcantmaxpasajeros, idempresa, rnumeroempleado, vimporte, tipoAsiento, idayvuelta)
                         VALUES ('" . $this->getIdViaje() . "','" .
-                    $this->getDestino() . "','" .
-                    $this->getCantMaxPasajeros() .  "','" .
-                    $empresa->getIdempresa() .  "','" .
-                    $responsable->getNumeroEmpleado() .  "','" .
-                    $this->getImporte() .  "','" .
-                    $this->getTipoAsiento() .  "','" .
-                    $this->getIdaYVuelta() .  "')";
-        if($bd->Iniciar())
+            $this->getDestino() . "','" .
+            $this->getCantMaxPasajeros() .  "','" .
+            $empresa->getIdEmpresa() .  "','" .
+            $responsable->getNumeroEmpleado() .  "','" .
+            $this->getImporte() .  "','" .
+            $this->getTipoAsiento() .  "','" .
+            $this->getIdaYVuelta() .  "')";
+
+        if ($bd->Iniciar()) 
         {
-            if($bd->Ejecutar($consultaInsertar))
+            if ($bd->Ejecutar($consultaInsertar)) 
             {
                 $resp = true;
-            }else {
+            } else {
                 $this->setMensajeOperacion($bd->getError());
             }
         } else {
@@ -299,36 +287,25 @@ class viaje{
         }
         return $resp;
     }
-}
 
-    public function Modificar($idAntiguo = "")
+    public function Modificar($id)
     {
         $resp = false;
         $bd = new BaseDatos();
         $empresa = $this->getEmpresa();
         $responsable = $this->getResponsable();
-        if ($idAntiguo == null) {
-            $consultaModifica = "UPDATE viaje 
-            SET vdestino = '" . $this->getDestino() .
-                "', vcantmaxpasajeros = '" . $this->getCantMaxPasajeros() .
-                "', idempresa = '" . $empresa->getIdEmpresa() .
-                "', rnumeroempleado = '" . $responsable->getNumeroEmpleado() .
-                "', vimporte = '" . $this->getImporte() .
-                "', tipoAsiento = '" . $this->getTipoAsiento() .
-                "', idayvuelta = '" . $this->getIdaYVuelta() .
-                "' WHERE idviaje = " . $this->getIdViaje();
-        } else {
-            $consultaModifica = "UPDATE viaje 
+        $consultaModifica = "UPDATE viaje 
             SET idviaje = '" . $this->getIdViaje() .
-                "', vdestino = '" . $this->getDestino() .
-                "', vcantmaxpasajeros = '" . $this->getCantMaxPasajeros() .
-                "', idempresa = '" . $empresa->getIdEmpresa() .
-                "', rnumeroempleado = '" . $responsable->getNumeroEmpleado() .
-                "', vimporte = '" . $this->getImporte() .
-                "', tipoAsiento = '" . $this->getTipoAsiento() .
-                "', idayvuelta = '" . $this->getIdaYVuelta() .
-                "' WHERE idviaje = " . $idAntiguo;
-        }
+            "', vdestino = '" . $this->getDestino() .
+            "', vcantmaxpasajeros = '" . $this->getCantMaxPasajeros() .
+            "', idempresa = '" . $empresa->getIdEmpresa() .
+            "', rnumeroempleado = '" . $responsable->getNumeroEmpleado() .
+            "', vimporte = '" . $this->getImporte() .
+            "', tipoAsiento = '" . $this->getTipoAsiento() .
+            "', idayvuelta = '" . $this->getIdaYVuelta() .
+            "' WHERE idviaje = " . $id;
+
+
         if ($bd->Iniciar()) {
             if ($bd->Ejecutar($consultaModifica)) {
                 $resp =  true;
@@ -346,17 +323,14 @@ class viaje{
         $bd = new BaseDatos();
         $resp = false;
 
-        if($bd->Iniciar())
-        {
-            $consultaBorrarPasajeros = "DELETE FROM pasajero WHERE idviaje = " . $this->getIdViaje();
+        if ($bd->Iniciar()) {
             $consultaBorrarViaje = "DELETE FROM viaje WHERE idviaje = " . $this->getIdViaje();
-            if($bd->Ejecutar($consultaBorrarPasajeros) && $bd->Ejecutar($consultaBorrarViaje))
-            {
+            if ($bd->Ejecutar($consultaBorrarViaje)) {
                 $resp = true;
             } else {
                 $this->setMensajeOperacion($bd->getError());
             }
-        }else{
+        } else {
             $this->setMensajeOperacion($bd->getError());
         }
         return $resp;

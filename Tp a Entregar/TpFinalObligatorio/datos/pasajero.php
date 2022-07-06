@@ -133,7 +133,7 @@ class pasajero
         return $result;
     }
 
-    public function Listar($condicion)
+    public function Listar($condicion = "")
     {
         $arreglo = null;
         $bd = new BaseDatos();
